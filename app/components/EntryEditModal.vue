@@ -35,18 +35,19 @@ function toDateInput(d: Date) {
   ].join("-");
 }
 function toTimeInput(d: Date) {
-  return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 }
 function combine(dateStr: string, timeStr: string): string {
   const [y, m, day] = dateStr.split("-").map(Number);
-  const [h, min] = timeStr.split(":").map(Number);
+  const [h, min, sec] = timeStr.split(":").map(Number);
   const d = new Date(
     y ?? new Date().getFullYear(),
     (m ?? 1) - 1,
     day ?? 1,
     h ?? 0,
     min ?? 0,
-    0,
+    sec ?? 0,
     0,
   );
   return d.toISOString();
@@ -179,6 +180,7 @@ function onDelete() {
             <UInput
               v-model="startTime"
               type="time"
+              step="1"
               class="w-full"
             />
           </UFormField>
@@ -195,6 +197,7 @@ function onDelete() {
             <UInput
               v-model="endTime"
               type="time"
+              step="1"
               class="w-full"
             />
           </UFormField>
