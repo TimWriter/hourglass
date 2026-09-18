@@ -174,8 +174,8 @@ async function loadFromHandle(handle: FileSystemFileHandle) {
     saveState.value = "saved";
   } catch (e) {
     console.error("Failed to load database file", e);
-    errorMessage.value =
-      e instanceof Error
+    errorMessage.value
+      = e instanceof Error
         ? e.message
         : "Unknown error while opening the database file.";
     status.value = "error";
@@ -222,8 +222,8 @@ async function reconnect() {
     }
   } catch (e) {
     console.error("Failed to reconnect to the database file", e);
-    errorMessage.value =
-      e instanceof Error
+    errorMessage.value
+      = e instanceof Error
         ? e.message
         : "Could not reconnect to the database file.";
     status.value = "error";
@@ -246,8 +246,8 @@ async function createNew() {
   } catch (e) {
     if (e instanceof Error && e.name === "AbortError") return;
     console.error("Failed to create a new database file", e);
-    errorMessage.value =
-      e instanceof Error ? e.message : "Could not create the database file.";
+    errorMessage.value
+      = e instanceof Error ? e.message : "Could not create the database file.";
     status.value = "error";
   }
 }
@@ -267,8 +267,8 @@ async function openExisting() {
   } catch (e) {
     if (e instanceof Error && e.name === "AbortError") return;
     console.error("Failed to open an existing database file", e);
-    errorMessage.value =
-      e instanceof Error ? e.message : "Could not open the database file.";
+    errorMessage.value
+      = e instanceof Error ? e.message : "Could not open the database file.";
     status.value = "error";
   }
 }

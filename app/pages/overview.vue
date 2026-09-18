@@ -134,7 +134,9 @@ const dateFormatter = new Intl.DateTimeFormat("de-AT", {
         class="flex flex-col rounded-xl flex-1 p-6 gap-6 bg-white/95 dark:bg-black/50 backdrop-blur-lg"
       >
         <div class="flex items-center justify-between flex-wrap gap-3">
-          <h1 class="text-2xl font-semibold">Overview</h1>
+          <h1 class="text-2xl font-semibold">
+            Overview
+          </h1>
           <USelectMenu
             v-model="filterClientId"
             :items="filterItems"
@@ -184,13 +186,18 @@ const dateFormatter = new Intl.DateTimeFormat("de-AT", {
 
         <div>
           <div class="flex items-center justify-between mb-3">
-            <h2 class="text-lg font-semibold">Billing</h2>
+            <h2 class="text-lg font-semibold">
+              Billing
+            </h2>
           </div>
 
           <UCard>
             <div class="flex flex-col gap-4">
               <div class="flex flex-wrap items-end gap-3">
-                <UFormField label="Client" required>
+                <UFormField
+                  label="Client"
+                  required
+                >
                   <USelectMenu
                     v-model="billingClientId"
                     :items="billingClientItems"
@@ -264,7 +271,10 @@ const dateFormatter = new Intl.DateTimeFormat("de-AT", {
                 label="Round up daily hours to 0.25 h steps"
               />
 
-              <div v-if="!billingClientId" class="py-10">
+              <div
+                v-if="!billingClientId"
+                class="py-10"
+              >
                 <UEmpty
                   icon="i-lucide-receipt"
                   size="sm"
@@ -287,13 +297,24 @@ const dateFormatter = new Intl.DateTimeFormat("de-AT", {
                 />
               </div>
 
-              <table v-else class="w-full text-sm">
+              <table
+                v-else
+                class="w-full text-sm"
+              >
                 <thead>
                   <tr class="text-left text-muted border-b border-default">
-                    <th class="py-2 font-medium">Day</th>
-                    <th class="py-2 font-medium">Date</th>
-                    <th class="py-2 font-medium text-right">Hours</th>
-                    <th class="py-2 font-medium text-right">Amount</th>
+                    <th class="py-2 font-medium">
+                      Day
+                    </th>
+                    <th class="py-2 font-medium">
+                      Date
+                    </th>
+                    <th class="py-2 font-medium text-right">
+                      Hours
+                    </th>
+                    <th class="py-2 font-medium text-right">
+                      Amount
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -318,7 +339,12 @@ const dateFormatter = new Intl.DateTimeFormat("de-AT", {
                 </tbody>
                 <tfoot>
                   <tr class="font-semibold">
-                    <td class="py-2" colspan="2">Total</td>
+                    <td
+                      class="py-2"
+                      colspan="2"
+                    >
+                      Total
+                    </td>
                     <td class="py-2 text-right tabular-nums">
                       {{ formatHours(displayedBilling.totalHours) }}
                     </td>

@@ -91,9 +91,9 @@ function segmentsForDay(dayIndex: number) {
     // Hide the entry from its original day while it's being dragged to a
     // different one; the drag preview block below renders it there instead.
     if (
-      liveOverride.value &&
-      liveOverride.value.entryId === s.entryId &&
-      liveOverride.value.dayIndex !== dayIndex
+      liveOverride.value
+      && liveOverride.value.entryId === s.entryId
+      && liveOverride.value.dayIndex !== dayIndex
     )
       return false;
     return true;
@@ -489,10 +489,7 @@ onMounted(() => {
             :key="h"
             class="absolute right-2 -translate-y-1/2 text-xs text-muted"
             :style="{ top: `${(h - 1) * ROW_HEIGHT}px` }"
-            ><span v-if="h > 1"
-              >{{ String(h - 1).padStart(2, "0") }}:00</span
-            ></span
-          >
+          ><span v-if="h > 1">{{ String(h - 1).padStart(2, "0") }}:00</span></span>
         </div>
 
         <div
@@ -566,12 +563,12 @@ onMounted(() => {
 
           <div
             v-if="
-              draggedEntry &&
-              liveOverride &&
-              liveOverride.dayIndex === dayIndex &&
-              !segmentsForDay(dayIndex).some(
-                (s) => s.entryId === liveOverride!.entryId,
-              )
+              draggedEntry
+                && liveOverride
+                && liveOverride.dayIndex === dayIndex
+                && !segmentsForDay(dayIndex).some(
+                  (s) => s.entryId === liveOverride!.entryId,
+                )
             "
             class="absolute inset-x-0.5 rounded-lg px-2 py-1 overflow-hidden z-20 shadow-sm ring-2 ring-primary pointer-events-none"
             :style="{
@@ -656,7 +653,11 @@ onMounted(() => {
                     variant="ghost"
                     @click="cancelCreate"
                   />
-                  <UButton label="Create" size="sm" @click="confirmCreate" />
+                  <UButton
+                    label="Create"
+                    size="sm"
+                    @click="confirmCreate"
+                  />
                 </div>
               </div>
             </template>
@@ -666,5 +667,8 @@ onMounted(() => {
     </div>
   </div>
 
-  <EntryEditModal v-model:open="editModalOpen" :entry="editingEntry" />
+  <EntryEditModal
+    v-model:open="editModalOpen"
+    :entry="editingEntry"
+  />
 </template>

@@ -53,7 +53,10 @@ const route = useRoute();
     </template>
 
     <template v-else>
-      <UDashboardGroup unit="px" class="bg-zinc-900">
+      <UDashboardGroup
+        unit="px"
+        class="bg-zinc-900"
+      >
         <UDashboardSidebar
           :default-size="260"
           :resizable="false"
@@ -71,7 +74,11 @@ const route = useRoute();
               class="flex items-center font-semibold text-white rounded-lg px-2 py-3 backdrop-blur-lg bg-black/25 w-full"
             >
               <span class="flex items-center justify-center size-8">
-                <img class="size-5" :src="logoSrc" alt="Hourglass logo" />
+                <img
+                  class="size-5"
+                  :src="logoSrc"
+                  alt="Hourglass logo"
+                >
               </span>
               Hourglass
             </NuxtLink>
@@ -91,7 +98,10 @@ const route = useRoute();
                   : 'text-white/70 hover:text-white hover:bg-white/10'
               "
             >
-              <UIcon :name="item.icon" class="size-4 shrink-0" />
+              <UIcon
+                :name="item.icon"
+                class="size-4 shrink-0"
+              />
               {{ item.label }}
             </NuxtLink>
           </nav>

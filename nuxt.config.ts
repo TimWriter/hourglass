@@ -1,6 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  modules: ['@nuxt/eslint', '@nuxt/ui'],
+  modules: ["@nuxt/eslint", "@nuxt/ui"],
 
   // Fully client-side app: all persistence (File System Access API,
   // sql.js) only exists in the browser, so there is nothing useful
@@ -8,21 +8,12 @@ export default defineNuxtConfig({
   ssr: false,
 
   devtools: {
-    enabled: true
+    enabled: true,
   },
 
-  css: ['~/assets/css/main.css'],
+  css: ["~/assets/css/main.css"],
 
-  compatibilityDate: '2026-06-30',
-
-  eslint: {
-    config: {
-      stylistic: {
-        commaDangle: 'never',
-        braceStyle: '1tbs'
-      }
-    }
-  },
+  compatibilityDate: "2026-06-30",
 
   vite: {
     build: {
@@ -35,9 +26,21 @@ export default defineNuxtConfig({
       assetsInlineLimit: Number.MAX_SAFE_INTEGER,
       rollupOptions: {
         output: {
-          inlineDynamicImports: true
-        }
-      }
-    }
-  }
-})
+          inlineDynamicImports: true,
+        },
+      },
+    },
+  },
+
+  eslint: {
+    config: {
+      stylistic: {
+        quotes: "double",
+        semi: true,
+        arrowParens: true,
+        commaDangle: "always-multiline",
+        braceStyle: "1tbs",
+      },
+    },
+  },
+});

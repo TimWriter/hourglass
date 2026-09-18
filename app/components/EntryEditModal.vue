@@ -1,85 +1,85 @@
 <script setup lang="ts">
-import type { TimeEntry } from '~/types'
+import type { TimeEntry } from "~/types";
 
 const props = defineProps<{
-  entry: TimeEntry | null
-}>()
+  entry: TimeEntry | null;
+}>();
 
-const open = defineModel<boolean>('open', { default: false })
+const open = defineModel<boolean>("open", { default: false });
 
-const { activeClients, getById } = useClients()
-const { update, remove, stop } = useTimeEntries()
+const { activeClients, getById } = useClients();
+const { update, remove, stop } = useTimeEntries();
 
-const title = ref('')
-const clientId = ref<string | null>(null)
-const startDate = ref('')
-const startTime = ref('')
-const endDate = ref('')
-const endTime = ref('')
-const isRunning = ref(false)
+const title = ref("");
+const clientId = ref<string | null>(null);
+const startDate = ref("");
+const startTime = ref("");
+const endDate = ref("");
+const endTime = ref("");
+const isRunning = ref(false);
 
 const clientItems = computed(() => [
-  { label: 'No client', value: null, color: null as string | null },
-  ...activeClients.value.map(c => ({ label: c.name, value: c.id, color: c.color }))
-])
+  { label: "No client", value: null, color: null as string | null },
+  ...activeClients.value.map((c) => ({ label: c.name, value: c.id, color: c.color })),
+]);
 
 function toDateInput(d: Date) {
-  return [d.getFullYear(), String(d.getMonth() + 1).padStart(2, '0'), String(d.getDate()).padStart(2, '0')].join('-')
+  return [d.getFullYear(), String(d.getMonth() + 1).padStart(2, "0"), String(d.getDate()).padStart(2, "0")].join("-");
 }
 function toTimeInput(d: Date) {
-  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+  return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
 }
 function combine(dateStr: string, timeStr: string): string {
-  const [y, m, day] = dateStr.split('-').map(Number)
-  const [h, min] = timeStr.split(':').map(Number)
-  const d = new Date(y ?? new Date().getFullYear(), (m ?? 1) - 1, day ?? 1, h ?? 0, min ?? 0, 0, 0)
-  return d.toISOString()
+  const [y, m, day] = dateStr.split("-").map(Number);
+  const [h, min] = timeStr.split(":").map(Number);
+  const d = new Date(y ?? new Date().getFullYear(), (m ?? 1) - 1, day ?? 1, h ?? 0, min ?? 0, 0, 0);
+  return d.toISOString();
 }
 
 watch(open, (value) => {
-  if (!value || !props.entry) return
-  const entry = props.entry
-  title.value = entry.title
-  clientId.value = entry.clientId
-  const start = new Date(entry.start)
-  startDate.value = toDateInput(start)
-  startTime.value = toTimeInput(start)
-  isRunning.value = entry.end === null
-  const end = entry.end ? new Date(entry.end) : new Date()
-  endDate.value = toDateInput(end)
-  endTime.value = toTimeInput(end)
-}, { immediate: true })
+  if (!value || !props.entry) return;
+  const entry = props.entry;
+  title.value = entry.title;
+  clientId.value = entry.clientId;
+  const start = new Date(entry.start);
+  startDate.value = toDateInput(start);
+  startTime.value = toTimeInput(start);
+  isRunning.value = entry.end === null;
+  const end = entry.end ? new Date(entry.end) : new Date();
+  endDate.value = toDateInput(end);
+  endTime.value = toTimeInput(end);
+}, { immediate: true });
 
-const startIso = computed(() => combine(startDate.value, startTime.value))
-const endIso = computed(() => combine(endDate.value, endTime.value))
+const startIso = computed(() => combine(startDate.value, startTime.value));
+const endIso = computed(() => combine(endDate.value, endTime.value));
 
 const isValid = computed(() => {
-  if (isRunning.value) return true
-  return new Date(endIso.value).getTime() > new Date(startIso.value).getTime()
-})
+  if (isRunning.value) return true;
+  return new Date(endIso.value).getTime() > new Date(startIso.value).getTime();
+});
 
 function save() {
-  if (!props.entry || !isValid.value) return
+  if (!props.entry || !isValid.value) return;
   update(props.entry.id, {
     title: title.value,
     clientId: clientId.value,
     start: startIso.value,
-    end: isRunning.value ? null : endIso.value
-  })
-  open.value = false
+    end: isRunning.value ? null : endIso.value,
+  });
+  open.value = false;
 }
 
 function stopNow() {
-  if (!props.entry) return
-  isRunning.value = false
-  stop(props.entry.id)
-  open.value = false
+  if (!props.entry) return;
+  isRunning.value = false;
+  stop(props.entry.id);
+  open.value = false;
 }
 
 function onDelete() {
-  if (!props.entry) return
-  remove(props.entry.id)
-  open.value = false
+  if (!props.entry) return;
+  remove(props.entry.id);
+  open.value = false;
 }
 </script>
 

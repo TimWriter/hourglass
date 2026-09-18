@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { useIntervalFn } from '@vueuse/core'
+import { useIntervalFn } from "@vueuse/core";
 
-const { refresh: refreshClients } = useClients()
-const { refresh: refreshEntries, checkAutoStop } = useTimeEntries()
+const { refresh: refreshClients } = useClients();
+const { refresh: refreshEntries, checkAutoStop } = useTimeEntries();
 
 onMounted(() => {
-  refreshClients()
-  refreshEntries()
-})
+  refreshClients();
+  refreshEntries();
+});
 
-const { pause, resume } = useIntervalFn(() => checkAutoStop(), 30_000)
-onUnmounted(() => pause())
-resume()
+const { pause, resume } = useIntervalFn(() => checkAutoStop(), 30_000);
+onUnmounted(() => pause());
+resume();
 </script>
 
 <template>

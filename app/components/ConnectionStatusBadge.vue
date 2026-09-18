@@ -1,23 +1,23 @@
 <script setup lang="ts">
-const { saveState, fileName } = useDatabase()
+const { saveState, fileName } = useDatabase();
 
 const label = computed(() => {
-  if (saveState.value === 'saving') return 'Saving…'
-  if (saveState.value === 'error') return 'Save failed'
-  return 'Saved'
-})
+  if (saveState.value === "saving") return "Saving…";
+  if (saveState.value === "error") return "Save failed";
+  return "Saved";
+});
 
 const icon = computed(() => {
-  if (saveState.value === 'saving') return 'i-lucide-loader-circle'
-  if (saveState.value === 'error') return 'i-lucide-triangle-alert'
-  return 'i-lucide-check'
-})
+  if (saveState.value === "saving") return "i-lucide-loader-circle";
+  if (saveState.value === "error") return "i-lucide-triangle-alert";
+  return "i-lucide-check";
+});
 
 const color = computed(() => {
-  if (saveState.value === 'error') return 'error'
-  if (saveState.value === 'saving') return 'neutral'
-  return 'success'
-})
+  if (saveState.value === "error") return "error";
+  if (saveState.value === "saving") return "neutral";
+  return "success";
+});
 </script>
 
 <template>

@@ -47,7 +47,9 @@ function onDelete(client: Client) {
       >
         <div class="flex items-center justify-between mb-6">
           <div>
-            <h1 class="text-2xl font-semibold">Clients</h1>
+            <h1 class="text-2xl font-semibold">
+              Clients
+            </h1>
             <p class="text-sm text-muted mt-1">
               Manage the clients you track time and revenue for.
             </p>
@@ -59,7 +61,10 @@ function onDelete(client: Client) {
           />
         </div>
 
-        <div v-if="activeClients.length === 0" class="py-16">
+        <div
+          v-if="activeClients.length === 0"
+          class="py-16"
+        >
           <UEmpty
             icon="i-lucide-users"
             size="sm"
@@ -76,7 +81,10 @@ function onDelete(client: Client) {
           </UEmpty>
         </div>
 
-        <div v-else class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div
+          v-else
+          class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+        >
           <UCard
             v-for="client in activeClients"
             :key="client.id"
@@ -133,7 +141,10 @@ function onDelete(client: Client) {
           </UCard>
         </div>
 
-        <div v-if="archivedClients.length > 0" class="mt-8">
+        <div
+          v-if="archivedClients.length > 0"
+          class="mt-8"
+        >
           <UButton
             :icon="
               archivedOpen ? 'i-lucide-chevron-down' : 'i-lucide-chevron-right'
@@ -199,7 +210,10 @@ function onDelete(client: Client) {
           </div>
         </div>
 
-        <ClientFormModal v-model:open="modalOpen" :client="editingClient" />
+        <ClientFormModal
+          v-model:open="modalOpen"
+          :client="editingClient"
+        />
       </div>
     </template>
   </UDashboardPanel>

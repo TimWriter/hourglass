@@ -1,54 +1,54 @@
 <script setup lang="ts">
-import type { Client } from '~/types'
+import type { Client } from "~/types";
 
 const props = defineProps<{
-  client?: Client | null
-}>()
+  client?: Client | null;
+}>();
 
-const open = defineModel<boolean>('open', { default: false })
+const open = defineModel<boolean>("open", { default: false });
 
 const emit = defineEmits<{
-  saved: []
-}>()
+  saved: [];
+}>();
 
 const PALETTE: string[] = [
-  '#4F46E5', '#0EA5E9', '#10B981', '#F59E0B',
-  '#EF4444', '#EC4899', '#8B5CF6', '#14B8A6',
-  '#F97316', '#64748B'
-]
-const DEFAULT_COLOR: string = PALETTE[0] ?? '#4F46E5'
+  "#4F46E5", "#0EA5E9", "#10B981", "#F59E0B",
+  "#EF4444", "#EC4899", "#8B5CF6", "#14B8A6",
+  "#F97316", "#64748B",
+];
+const DEFAULT_COLOR: string = PALETTE[0] ?? "#4F46E5";
 
 function randomPaletteColor(): string {
-  return PALETTE[Math.floor(Math.random() * PALETTE.length)] ?? DEFAULT_COLOR
+  return PALETTE[Math.floor(Math.random() * PALETTE.length)] ?? DEFAULT_COLOR;
 }
 
-const { create, update } = useClients()
+const { create, update } = useClients();
 
-const name = ref('')
-const hourlyRate = ref<number>(0)
-const color = ref<string>(DEFAULT_COLOR)
+const name = ref("");
+const hourlyRate = ref<number>(0);
+const color = ref<string>(DEFAULT_COLOR);
 
-const isEdit = computed(() => !!props.client)
+const isEdit = computed(() => !!props.client);
 
 watch(open, (value) => {
-  if (!value) return
-  name.value = props.client?.name ?? ''
-  hourlyRate.value = props.client?.hourlyRate ?? 0
-  color.value = props.client?.color ?? randomPaletteColor()
-}, { immediate: true })
+  if (!value) return;
+  name.value = props.client?.name ?? "";
+  hourlyRate.value = props.client?.hourlyRate ?? 0;
+  color.value = props.client?.color ?? randomPaletteColor();
+}, { immediate: true });
 
-const canSave = computed(() => name.value.trim().length > 0 && hourlyRate.value >= 0)
+const canSave = computed(() => name.value.trim().length > 0 && hourlyRate.value >= 0);
 
 function save() {
-  if (!canSave.value) return
-  const data = { name: name.value.trim(), hourlyRate: hourlyRate.value, color: color.value }
+  if (!canSave.value) return;
+  const data = { name: name.value.trim(), hourlyRate: hourlyRate.value, color: color.value };
   if (props.client) {
-    update(props.client.id, data)
+    update(props.client.id, data);
   } else {
-    create(data)
+    create(data);
   }
-  emit('saved')
-  open.value = false
+  emit("saved");
+  open.value = false;
 }
 </script>
 

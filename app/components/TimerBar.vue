@@ -1,73 +1,73 @@
 <script setup lang="ts">
-const { activeClients, getById } = useClients()
-const { runningEntry, start, stop } = useTimeEntries()
-const now = useNow()
+const { activeClients, getById } = useClients();
+const { runningEntry, start, stop } = useTimeEntries();
+const now = useNow();
 
-const title = ref('')
-const selectedClientId = ref<string | null>(null)
+const title = ref("");
+const selectedClientId = ref<string | null>(null);
 
 const clientItems = computed(() => [
-  { label: 'No client', value: null, color: null as string | null },
-  ...activeClients.value.map(c => ({
+  { label: "No client", value: null, color: null as string | null },
+  ...activeClients.value.map((c) => ({
     label: c.name,
     value: c.id,
-    color: c.color
-  }))
-])
+    color: c.color,
+  })),
+]);
 
-const isRunning = computed(() => !!runningEntry.value)
+const isRunning = computed(() => !!runningEntry.value);
 
 watch(
   runningEntry,
   (entry) => {
     if (entry) {
-      title.value = entry.title
-      selectedClientId.value = entry.clientId
+      title.value = entry.title;
+      selectedClientId.value = entry.clientId;
     }
   },
-  { immediate: true }
-)
+  { immediate: true },
+);
 
 const elapsedMs = computed(() => {
-  if (!runningEntry.value) return 0
+  if (!runningEntry.value) return 0;
   return Math.max(
     0,
-    now.value.getTime() - new Date(runningEntry.value.start).getTime()
-  )
-})
+    now.value.getTime() - new Date(runningEntry.value.start).getTime(),
+  );
+});
 
-const elapsedLabel = computed(() => formatDuration(elapsedMs.value))
+const elapsedLabel = computed(() => formatDuration(elapsedMs.value));
 
 function toggle() {
   if (runningEntry.value) {
-    stop(runningEntry.value.id)
+    stop(runningEntry.value.id);
   } else {
-    start(title.value.trim(), selectedClientId.value)
+    start(title.value.trim(), selectedClientId.value);
   }
 }
 
 function onTitleChange() {
   if (runningEntry.value) {
-    useTimeEntries().update(runningEntry.value.id, { title: title.value })
+    useTimeEntries().update(runningEntry.value.id, { title: title.value });
   }
 }
 
 function onClientChange() {
   if (runningEntry.value) {
     useTimeEntries().update(runningEntry.value.id, {
-      clientId: selectedClientId.value
-    })
+      clientId: selectedClientId.value,
+    });
   }
 }
 
 useHead({
   title: computed(() => {
-    if (!isRunning.value) return 'Hourglass'
-    const client = getById(selectedClientId.value)
-    const label = title.value.trim() || 'Untitled'
-    return `${elapsedLabel.value} · ${client ? client.name : label}`
-  })
-})
+    if (!isRunning.value) return "Hourglass";
+    const client = getById(selectedClientId.value);
+    const label = title.value.trim() || "Untitled";
+    return `${elapsedLabel.value} · ${client ? client.name : label}`;
+  }),
+});
 </script>
 
 <template>
