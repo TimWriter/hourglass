@@ -15,6 +15,7 @@ useSeoMeta({
 const { ready, init } = useDatabase();
 const { refresh: refreshClients } = useClients();
 const { refresh: refreshEntries } = useTimeEntries();
+const { refresh: refreshSettings } = useSettings();
 
 onMounted(async () => {
   await init();
@@ -26,6 +27,7 @@ watch(
     if (isReady) {
       refreshClients();
       refreshEntries();
+      refreshSettings();
     }
   },
   { immediate: true },
@@ -35,6 +37,7 @@ const navItems = [
   { label: "Track", to: "/track", icon: "i-lucide-timer" },
   { label: "Clients", to: "/clients", icon: "i-lucide-users" },
   { label: "Overview", to: "/overview", icon: "i-lucide-bar-chart-3" },
+  { label: "Settings", to: "/settings", icon: "i-lucide-settings" },
 ];
 
 const route = useRoute();

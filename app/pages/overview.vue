@@ -17,6 +17,7 @@ import {
 
 const { activeClients, archivedClients, getById } = useClients();
 const { entries, refresh } = useTimeEntries();
+const { settings } = useSettings();
 
 onMounted(() => refresh());
 
@@ -37,8 +38,8 @@ const filterItems = computed(() => [
 const now = useNow();
 
 const weekHours = computed(() => {
-  const start = startOfWeek(now.value, { weekStartsOn: 1 });
-  const end = endOfWeek(now.value, { weekStartsOn: 1 });
+  const start = startOfWeek(now.value, { weekStartsOn: settings.value.weekStartsOn });
+  const end = endOfWeek(now.value, { weekStartsOn: settings.value.weekStartsOn });
   return totalHours(
     entriesInRange(entries.value, start, end, filterClientId.value),
   );
@@ -85,8 +86,8 @@ function applyPreset(p: Preset) {
   preset.value = p;
   const n = new Date();
   if (p === "this-week") {
-    billingStart.value = toDateInput(startOfWeek(n, { weekStartsOn: 1 }));
-    billingEnd.value = toDateInput(endOfWeek(n, { weekStartsOn: 1 }));
+    billingStart.value = toDateInput(startOfWeek(n, { weekStartsOn: settings.value.weekStartsOn }));
+    billingEnd.value = toDateInput(endOfWeek(n, { weekStartsOn: settings.value.weekStartsOn }));
   } else if (p === "this-month") {
     billingStart.value = toDateInput(startOfMonth(n));
     billingEnd.value = toDateInput(endOfMonth(n));
@@ -112,19 +113,16 @@ const billing = computed(() => {
   );
 });
 
-const roundUpDaily = ref(false);
-
 const displayedBilling = computed(() => {
   if (!billing.value) return null;
-  return roundUpDaily.value ? applyDailyRoundUp(billing.value) : billing.value;
+  const step = settings.value.billingRoundingStep;
+  return step > 0 ? applyDailyRoundUp(billing.value, step) : billing.value;
 });
 
 const weekdayFormatter = new Intl.DateTimeFormat("en-US", { weekday: "short" });
-const dateFormatter = new Intl.DateTimeFormat("de-AT", {
-  day: "2-digit",
-  month: "2-digit",
-  year: "numeric",
-});
+function formatBillingDate(date: Date): string {
+  return formatDate(date, settings.value.dateFormat);
+}
 </script>
 
 <template>
@@ -174,10 +172,10 @@ const dateFormatter = new Intl.DateTimeFormat("de-AT", {
             <p
               class="text-3xl font-semibold mt-1 text-neutral-900 dark:text-white"
             >
-              {{ formatCurrency(forecast.forecast) }}
+              {{ formatCurrency(forecast.forecast, settings.currency) }}
             </p>
             <p class="text-xs text-neutral-600 dark:text-neutral-400 mt-1">
-              {{ formatCurrency(forecast.revenueSoFar) }} so far ·
+              {{ formatCurrency(forecast.revenueSoFar, settings.currency) }} so far ·
               {{ forecast.elapsedWorkdays }}/{{ forecast.totalWorkdays }}
               workdays elapsed
             </p>
@@ -266,10 +264,19 @@ const dateFormatter = new Intl.DateTimeFormat("de-AT", {
                 </div>
               </div>
 
-              <USwitch
-                v-model="roundUpDaily"
-                label="Round up daily hours to 0.25 h steps"
-              />
+              <p
+                v-if="settings.billingRoundingStep > 0"
+                class="text-xs text-muted"
+              >
+                Daily hours are rounded up to {{ settings.billingRoundingStep * 60 }}-minute
+                steps —
+                <NuxtLink
+                  to="/settings"
+                  class="underline"
+                >
+                  change in Settings
+                </NuxtLink>.
+              </p>
 
               <div
                 v-if="!billingClientId"
@@ -327,13 +334,13 @@ const dateFormatter = new Intl.DateTimeFormat("de-AT", {
                       {{ weekdayFormatter.format(row.date) }}
                     </td>
                     <td class="py-2">
-                      {{ dateFormatter.format(row.date) }}
+                      {{ formatBillingDate(row.date) }}
                     </td>
                     <td class="py-2 text-right tabular-nums">
                       {{ formatHours(row.hours) }}
                     </td>
                     <td class="py-2 text-right tabular-nums">
-                      {{ formatCurrency(row.amount) }}
+                      {{ formatCurrency(row.amount, settings.currency) }}
                     </td>
                   </tr>
                 </tbody>
@@ -349,7 +356,7 @@ const dateFormatter = new Intl.DateTimeFormat("de-AT", {
                       {{ formatHours(displayedBilling.totalHours) }}
                     </td>
                     <td class="py-2 text-right tabular-nums">
-                      {{ formatCurrency(displayedBilling.totalAmount) }}
+                      {{ formatCurrency(displayedBilling.totalAmount, settings.currency) }}
                     </td>
                   </tr>
                 </tfoot>

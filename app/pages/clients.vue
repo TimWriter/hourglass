@@ -9,6 +9,7 @@ const {
   remove,
   hasTimeEntries,
 } = useClients();
+const { settings } = useSettings();
 
 onMounted(() => refresh());
 
@@ -100,7 +101,7 @@ function onDelete(client: Client) {
                   {{ client.name }}
                 </p>
                 <p class="text-sm text-muted">
-                  {{ formatCurrency(client.hourlyRate) }} / h
+                  {{ formatCurrency(client.hourlyRate, settings.currency) }} / h
                 </p>
               </div>
             </div>
@@ -176,7 +177,7 @@ function onDelete(client: Client) {
                     {{ client.name }}
                   </p>
                   <p class="text-sm text-muted">
-                    {{ formatCurrency(client.hourlyRate) }} / h
+                    {{ formatCurrency(client.hourlyRate, settings.currency) }} / h
                   </p>
                 </div>
               </div>

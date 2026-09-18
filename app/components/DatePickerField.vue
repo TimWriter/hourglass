@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { CalendarDate, type DateValue } from "@internationalized/date";
+import { format } from "date-fns";
+
+const { settings } = useSettings();
 
 // v-model is a plain 'yyyy-MM-dd' string (matches the rest of the app's
 // date handling), converted to/from a CalendarDate for UCalendar.
@@ -21,8 +24,7 @@ const calendarValue = computed<DateValue>({
   },
 });
 
-const dateFormatter = new Intl.DateTimeFormat("de-AT", { day: "2-digit", month: "2-digit", year: "numeric" });
-const displayLabel = computed(() => dateFormatter.format(toCalendarDate(modelValue.value).toDate("UTC")));
+const displayLabel = computed(() => format(toCalendarDate(modelValue.value).toDate("UTC"), settings.value.dateFormat));
 
 const open = ref(false);
 </script>

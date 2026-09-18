@@ -6,15 +6,14 @@ import {
   isSameWeek,
   format,
 } from "date-fns";
+import type { WeekStartsOn } from "~/types";
 
-export const WEEK_OPTIONS = { weekStartsOn: 1 as const };
-
-export function weekStart(date: Date): Date {
-  return startOfWeek(date, WEEK_OPTIONS);
+export function weekStart(date: Date, weekStartsOn: WeekStartsOn): Date {
+  return startOfWeek(date, { weekStartsOn });
 }
 
-export function weekEnd(date: Date): Date {
-  return endOfWeek(date, WEEK_OPTIONS);
+export function weekEnd(date: Date, weekStartsOn: WeekStartsOn): Date {
+  return endOfWeek(date, { weekStartsOn });
 }
 
 export function weekDays(start: Date): Date[] {
@@ -29,8 +28,8 @@ export function previousWeek(start: Date): Date {
   return addWeeks(start, -1);
 }
 
-export function isCurrentWeek(start: Date): boolean {
-  return isSameWeek(start, new Date(), WEEK_OPTIONS);
+export function isCurrentWeek(start: Date, weekStartsOn: WeekStartsOn): boolean {
+  return isSameWeek(start, new Date(), { weekStartsOn });
 }
 
 export function formatWeekRange(start: Date): string {

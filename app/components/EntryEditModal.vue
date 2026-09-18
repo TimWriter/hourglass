@@ -20,11 +20,19 @@ const isRunning = ref(false);
 
 const clientItems = computed(() => [
   { label: "No client", value: null, color: null as string | null },
-  ...activeClients.value.map((c) => ({ label: c.name, value: c.id, color: c.color })),
+  ...activeClients.value.map((c) => ({
+    label: c.name,
+    value: c.id,
+    color: c.color,
+  })),
 ]);
 
 function toDateInput(d: Date) {
-  return [d.getFullYear(), String(d.getMonth() + 1).padStart(2, "0"), String(d.getDate()).padStart(2, "0")].join("-");
+  return [
+    d.getFullYear(),
+    String(d.getMonth() + 1).padStart(2, "0"),
+    String(d.getDate()).padStart(2, "0"),
+  ].join("-");
 }
 function toTimeInput(d: Date) {
   return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
@@ -32,23 +40,35 @@ function toTimeInput(d: Date) {
 function combine(dateStr: string, timeStr: string): string {
   const [y, m, day] = dateStr.split("-").map(Number);
   const [h, min] = timeStr.split(":").map(Number);
-  const d = new Date(y ?? new Date().getFullYear(), (m ?? 1) - 1, day ?? 1, h ?? 0, min ?? 0, 0, 0);
+  const d = new Date(
+    y ?? new Date().getFullYear(),
+    (m ?? 1) - 1,
+    day ?? 1,
+    h ?? 0,
+    min ?? 0,
+    0,
+    0,
+  );
   return d.toISOString();
 }
 
-watch(open, (value) => {
-  if (!value || !props.entry) return;
-  const entry = props.entry;
-  title.value = entry.title;
-  clientId.value = entry.clientId;
-  const start = new Date(entry.start);
-  startDate.value = toDateInput(start);
-  startTime.value = toTimeInput(start);
-  isRunning.value = entry.end === null;
-  const end = entry.end ? new Date(entry.end) : new Date();
-  endDate.value = toDateInput(end);
-  endTime.value = toTimeInput(end);
-}, { immediate: true });
+watch(
+  open,
+  (value) => {
+    if (!value || !props.entry) return;
+    const entry = props.entry;
+    title.value = entry.title;
+    clientId.value = entry.clientId;
+    const start = new Date(entry.start);
+    startDate.value = toDateInput(start);
+    startTime.value = toTimeInput(start);
+    isRunning.value = entry.end === null;
+    const end = entry.end ? new Date(entry.end) : new Date();
+    endDate.value = toDateInput(end);
+    endTime.value = toTimeInput(end);
+  },
+  { immediate: true },
+);
 
 const startIso = computed(() => combine(startDate.value, startTime.value));
 const endIso = computed(() => combine(endDate.value, endTime.value));
@@ -87,7 +107,11 @@ function onDelete() {
   <UModal
     v-model:open="open"
     title="Edit time entry"
-    :description="entry?.autoStopped24h ? 'This entry was automatically stopped after running for 24 hours.' : undefined"
+    :description="
+      entry?.autoStopped24h
+        ? 'This entry was automatically stopped after running for 24 hours.'
+        : undefined
+    "
   >
     <template #body>
       <div class="flex flex-col gap-4">
@@ -124,11 +148,13 @@ function onDelete() {
               <span
                 v-if="getById(modelValue as string)"
                 class="size-2.5 rounded-full shrink-0"
-                :style="{ backgroundColor: getById(modelValue as string)?.color }"
+                :style="{
+                  backgroundColor: getById(modelValue as string)?.color,
+                }"
               />
               <span
                 v-else
-                class="size-2.5 rounded-full shrink-0 border border-dashed border-default"
+                class="size-2.5 rounded-full shrink-0 border border-dashed border-zinc-400"
               />
             </template>
             <template #item-leading="{ item }">
@@ -139,7 +165,7 @@ function onDelete() {
               />
               <span
                 v-else
-                class="size-2.5 rounded-full shrink-0 border border-dashed border-default"
+                class="size-2.5 rounded-full shrink-0 border border-dashed border-zinc-400"
               />
             </template>
           </USelectMenu>

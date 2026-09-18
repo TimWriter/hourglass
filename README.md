@@ -67,17 +67,18 @@ Because the data lives in one ordinary file, you can back it up, sync it with yo
 
 ## Features
 
-- **Clients** — name, hourly rate (€), color, archive instead of delete once a client has time entries.
-- **Track** — a Toggl-style timer bar (title, client, start/stop) plus a Monday-first weekly calendar. Entries can be created by clicking and dragging on empty time, moved by dragging, resized from either edge (15-minute snapping), and edited or deleted via a click. A timer left running for 24 hours is automatically stopped and flagged for review.
+- **Clients** — name, hourly rate, color, archive instead of delete once a client has time entries.
+- **Track** — a Toggl-style timer bar (title, client, start/stop) plus a weekly calendar. Entries can be created by clicking and dragging on empty time, moved by dragging, resized from either edge (snapping granularity is configurable in Settings), and edited or deleted via a click. A timer left running for 24 hours is automatically stopped and flagged for review.
 - **Overview** — hours this week/month (optionally filtered by client), a linear revenue forecast for the current month based on elapsed vs. total Mon–Fri workdays, and a billing calculator that computes hours/revenue per day for a chosen client and date range (This week / This month / Last month presets, or a custom range). Billing is calculated live from time entries; nothing is marked as "invoiced" or persisted separately.
+- **Settings** — time format (12/24h), first day of the week, currency, date format, calendar snapping granularity, default page on launch, and the billing table's daily rounding step. All of it is stored as JSON in the same SQLite file's `meta` table, so it travels with the database rather than living in browser storage.
 
 ## Project structure
 
 ```
 app/
-  composables/   useDatabase (sql.js + file persistence), useClients, useTimeEntries, useNow
+  composables/   useDatabase (sql.js + file persistence), useClients, useTimeEntries, useSettings, useNow
   components/    SetupScreen, WeekCalendar, TimerBar, ClientFormModal, EntryEditModal, ...
-  pages/         track.vue, clients.vue, overview.vue
+  pages/         track.vue, clients.vue, overview.vue, settings.vue
   utils/         format.ts, week.ts, stats.ts
 scripts/
   pack-offline.mjs   packs `nuxt generate`'s output into the single-file offline build
@@ -87,7 +88,8 @@ scripts/
 
 - **Nuxt UI v4 instead of v3.** The project had Nuxt UI `^4.11.1` already installed, so the app was built against the v4 component API (the v3-era patterns referenced in the original brief no longer apply — e.g. `UPopover`/`UModal` use `v-model:open` and named slots rather than the old `v-model` + default-slot style).
 - **Drag interactions are constrained to a single day column.** Dragging to create, move, or resize a calendar entry only reads the pointer's vertical position; moving the pointer into a neighbouring day's column does not move the entry to that day (multi-day entries — e.g. a 24h auto-stopped timer that crosses midnight — can only be corrected via the edit modal, not by dragging).
-- **Snapping granularity is 15 minutes** for drag-to-create, drag-to-move, and drag-to-resize (the brief allowed either 5 or 15 minutes).
+- **Snapping granularity defaults to 15 minutes** for drag-to-create, drag-to-move, and drag-to-resize, but is now configurable (5/15/30 min) in Settings.
+- **The 12/24-hour and date-format settings only affect text the app renders itself** (calendar hour labels, the billing table's date column, the date-picker button). The native `<input type="time">`/`<input type="date">` fields used elsewhere (entry start/end, billing range) are rendered by the browser according to its own locale and can't be overridden from JS in a cross-browser way.
 - **Editing an entry's client re-snapshots the hourly rate** to that client's _current_ rate, unless the rate field itself is edited directly in the same change — this keeps `rate_snapshot` meaningful after reassigning an entry to a different client while still allowing a manual override.
 - **The overview's client filter also scopes the revenue forecast**, not just the two hour tiles, since it lives in the same "Stats" area.
 - **Remembering the file handle in IndexedDB is best-effort.** If that write fails (e.g. private browsing with IndexedDB disabled), the freshly opened/created database still loads and works for the current session — you'd just be asked to pick the file again next time instead of the app being blocked entirely.

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-await navigateTo("/track", { replace: true });
+const { settings } = useSettings();
+await navigateTo(`/${settings.value.defaultPage}`, { replace: true });
 </script>
 
 <template>

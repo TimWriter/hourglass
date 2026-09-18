@@ -103,7 +103,7 @@ useHead({
           />
           <span
             v-else
-            class="size-2.5 rounded-full shrink-0 border border-dashed border-default"
+            class="size-2.5 rounded-full shrink-0 border border-dashed border-zinc-400"
           />
         </template>
         <template #item-leading="{ item }">
@@ -114,7 +114,7 @@ useHead({
           />
           <span
             v-else
-            class="size-2.5 rounded-full shrink-0 border border-dashed border-default"
+            class="size-2.5 rounded-full shrink-0 border border-dashed border-zinc-400"
           />
         </template>
       </USelectMenu>

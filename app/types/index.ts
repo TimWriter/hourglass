@@ -68,6 +68,32 @@ export function timeEntryFromRow(row: TimeEntryRow): TimeEntry {
   };
 }
 
+export type TimeFormat = "24h" | "12h";
+export type WeekStartsOn = 0 | 1;
+export type DefaultPage = "track" | "clients" | "overview";
+
+export interface Settings {
+  timeFormat: TimeFormat;
+  weekStartsOn: WeekStartsOn;
+  currency: string;
+  dateFormat: string;
+  /** Hours: round each billing day's total up to this step (0 = off). */
+  billingRoundingStep: number;
+  /** Minutes: calendar drag-to-create/move/resize snapping granularity. */
+  snapMinutes: number;
+  defaultPage: DefaultPage;
+}
+
+export const DEFAULT_SETTINGS: Settings = {
+  timeFormat: "24h",
+  weekStartsOn: 1,
+  currency: "EUR",
+  dateFormat: "dd.MM.yyyy",
+  billingRoundingStep: 0,
+  snapMinutes: 15,
+  defaultPage: "track",
+};
+
 export type ConnectionStatus
   = | "idle"
     | "checking"

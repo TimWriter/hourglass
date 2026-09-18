@@ -13,15 +13,24 @@ import {
 } from "~/utils/week";
 
 const ROW_HEIGHT = 48; // px per hour
-const SNAP_MIN = 15;
-const MIN_BLOCK_MIN = 15;
 
 const { activeClients, getById } = useClients();
 const { entries, createManual, update } = useTimeEntries();
+const { settings } = useSettings();
 const now = useNow();
 
-const anchor = ref(toWeekStart(new Date()));
+// The calendar's drag-to-create/move/resize snapping granularity is also
+// the smallest block a drag can create — both driven by the same setting.
+const snapMinutes = computed(() => settings.value.snapMinutes);
+
+const anchor = ref(toWeekStart(new Date(), settings.value.weekStartsOn));
 const days = computed(() => weekDays(anchor.value));
+
+// Keep the currently-displayed week's start aligned with the convention
+// (Mon/Sun) if the user changes it while viewing the calendar.
+watch(() => settings.value.weekStartsOn, (weekStartsOn) => {
+  anchor.value = toWeekStart(anchor.value, weekStartsOn);
+});
 
 function goPrev() {
   anchor.value = previousWeek(anchor.value);
@@ -30,7 +39,16 @@ function goNext() {
   anchor.value = nextWeek(anchor.value);
 }
 function goToday() {
-  anchor.value = toWeekStart(new Date());
+  anchor.value = toWeekStart(new Date(), settings.value.weekStartsOn);
+}
+
+function hourLabel(hour: number): string {
+  if (settings.value.timeFormat === "12h") {
+    const period = hour < 12 ? "AM" : "PM";
+    const displayHour = hour % 12 === 0 ? 12 : hour % 12;
+    return `${displayHour} ${period}`;
+  }
+  return `${String(hour).padStart(2, "0")}:00`;
 }
 
 const clientItems = computed(() => [
@@ -109,7 +127,7 @@ function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
 }
 
-function snap(value: number, step = SNAP_MIN) {
+function snap(value: number, step = snapMinutes.value) {
   return Math.round(value / step) * step;
 }
 
@@ -172,7 +190,7 @@ function onBackgroundPointerDown(dayIndex: number, event: PointerEvent) {
   createPreview.value = {
     dayIndex,
     startMin: anchorMin,
-    endMin: anchorMin + MIN_BLOCK_MIN,
+    endMin: anchorMin + snapMinutes.value,
   };
   window.addEventListener("pointermove", onCreatePointerMove);
   window.addEventListener("pointerup", onCreatePointerUp, { once: true });
@@ -183,7 +201,7 @@ function onCreatePointerMove(event: PointerEvent) {
   const current = snap(yToMinutes(event.clientY));
   if (current !== createDrag.anchorMin) createDrag.moved = true;
   const start = Math.min(createDrag.anchorMin, current);
-  const end = Math.max(createDrag.anchorMin, current, start + MIN_BLOCK_MIN);
+  const end = Math.max(createDrag.anchorMin, current, start + snapMinutes.value);
   createPreview.value = {
     dayIndex: createDrag.dayIndex,
     startMin: start,
@@ -340,13 +358,13 @@ function onAdjustPointerMove(event: PointerEvent) {
     startMin = clamp(
       adjustDrag.originStart + deltaMin,
       0,
-      adjustDrag.originEnd - MIN_BLOCK_MIN,
+      adjustDrag.originEnd - snapMinutes.value,
     );
     endMin = adjustDrag.originEnd;
   } else {
     endMin = clamp(
       adjustDrag.originEnd + deltaMin,
-      adjustDrag.originStart + MIN_BLOCK_MIN,
+      adjustDrag.originStart + snapMinutes.value,
       24 * 60,
     );
     startMin = adjustDrag.originStart;
@@ -438,7 +456,7 @@ onMounted(() => {
             color="neutral"
             variant="subtle"
             size="sm"
-            :disabled="isCurrentWeek(anchor)"
+            :disabled="isCurrentWeek(anchor, settings.weekStartsOn)"
             @click="goToday"
           />
         </div>
@@ -489,7 +507,7 @@ onMounted(() => {
             :key="h"
             class="absolute right-2 -translate-y-1/2 text-xs text-muted"
             :style="{ top: `${(h - 1) * ROW_HEIGHT}px` }"
-          ><span v-if="h > 1">{{ String(h - 1).padStart(2, "0") }}:00</span></span>
+          ><span v-if="h > 1">{{ hourLabel(h - 1) }}</span></span>
         </div>
 
         <div
@@ -629,7 +647,7 @@ onMounted(() => {
                       />
                       <span
                         v-else
-                        class="size-2.5 rounded-full shrink-0 border border-dashed border-default"
+                        class="size-2.5 rounded-full shrink-0 border border-dashed border-zinc-400"
                       />
                     </template>
                     <template #item-leading="{ item }">
@@ -640,7 +658,7 @@ onMounted(() => {
                       />
                       <span
                         v-else
-                        class="size-2.5 rounded-full shrink-0 border border-dashed border-default"
+                        class="size-2.5 rounded-full shrink-0 border border-dashed border-zinc-400"
                       />
                     </template>
                   </USelectMenu>

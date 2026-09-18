@@ -23,6 +23,7 @@ function randomPaletteColor(): string {
 }
 
 const { create, update } = useClients();
+const { settings } = useSettings();
 
 const name = ref("");
 const hourlyRate = ref<number>(0);
@@ -84,7 +85,7 @@ function save() {
               :step="5"
               class="flex-1"
             />
-            <span class="text-sm text-muted">€ / h</span>
+            <span class="text-sm text-muted">{{ currencySymbol(settings.currency) }} / h</span>
           </div>
         </UFormField>
 
