@@ -109,7 +109,7 @@ function onDelete() {
     title="Edit time entry"
     :description="
       entry?.autoStopped24h
-        ? 'This entry was automatically stopped after running for 24 hours.'
+        ? 'This entry ran longer than the auto-stop limit and was stopped automatically.'
         : undefined
     "
   >
@@ -120,7 +120,7 @@ function onDelete() {
           color="warning"
           variant="subtle"
           icon="i-lucide-triangle-alert"
-          title="Auto-stopped after 24h"
+          title="Auto-stopped"
           description="Please check and correct the start and end time."
         />
 

@@ -108,7 +108,7 @@ function onDelete(client: Client) {
             <div class="flex items-center gap-1.5">
               <UButton
                 icon="i-lucide-pencil"
-                size="xs"
+                size="sm"
                 color="neutral"
                 variant="subtle"
                 label="Edit"
@@ -116,7 +116,7 @@ function onDelete(client: Client) {
               />
               <UButton
                 icon="i-lucide-archive"
-                size="xs"
+                size="sm"
                 color="neutral"
                 variant="ghost"
                 label="Archive"
@@ -131,7 +131,7 @@ function onDelete(client: Client) {
               >
                 <UButton
                   icon="i-lucide-trash-2"
-                  size="xs"
+                  size="sm"
                   color="error"
                   variant="ghost"
                   :disabled="!deletableIds.has(client.id)"
@@ -177,14 +177,15 @@ function onDelete(client: Client) {
                     {{ client.name }}
                   </p>
                   <p class="text-sm text-muted">
-                    {{ formatCurrency(client.hourlyRate, settings.currency) }} / h
+                    {{ formatCurrency(client.hourlyRate, settings.currency) }} /
+                    h
                   </p>
                 </div>
               </div>
               <div class="flex items-center gap-1.5">
                 <UButton
                   icon="i-lucide-archive-restore"
-                  size="xs"
+                  size="sm"
                   color="neutral"
                   variant="subtle"
                   label="Unarchive"
@@ -199,7 +200,7 @@ function onDelete(client: Client) {
                 >
                   <UButton
                     icon="i-lucide-trash-2"
-                    size="xs"
+                    size="sm"
                     color="error"
                     variant="ghost"
                     :disabled="!deletableIds.has(client.id)"

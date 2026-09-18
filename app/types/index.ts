@@ -82,6 +82,8 @@ export interface Settings {
   /** Minutes: calendar drag-to-create/move/resize snapping granularity. */
   snapMinutes: number;
   defaultPage: DefaultPage;
+  /** Hours a running timer is left before it's auto-stopped (0 = never). */
+  autoStopHours: number;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -92,6 +94,7 @@ export const DEFAULT_SETTINGS: Settings = {
   billingRoundingStep: 0,
   snapMinutes: 15,
   defaultPage: "track",
+  autoStopHours: 24,
 };
 
 export type ConnectionStatus

@@ -2,8 +2,6 @@ import { timeEntryFromRow, type TimeEntry, type TimeEntryRow } from "~/types";
 
 const entries = ref<TimeEntry[]>([]);
 
-const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
-
 export function useTimeEntries() {
   const { query, mutate, ready } = useDatabase();
   const { getById } = useClients();
@@ -86,13 +84,15 @@ export function useTimeEntries() {
     refresh();
   }
 
-  function checkAutoStop() {
-    if (!ready.value) return;
+  /** `autoStopHours` <= 0 disables auto-stopping entirely. */
+  function checkAutoStop(autoStopHours: number) {
+    if (!ready.value || autoStopHours <= 0) return;
     const running = runningEntry.value;
     if (!running) return;
+    const thresholdMs = autoStopHours * 60 * 60 * 1000;
     const startMs = new Date(running.start).getTime();
-    if (Date.now() - startMs >= TWENTY_FOUR_HOURS_MS) {
-      const endIso = new Date(startMs + TWENTY_FOUR_HOURS_MS).toISOString();
+    if (Date.now() - startMs >= thresholdMs) {
+      const endIso = new Date(startMs + thresholdMs).toISOString();
       mutate(
         "UPDATE time_entries SET end = ?, auto_stopped_24h = 1, updated_at = ? WHERE id = ?",
         [endIso, new Date().toISOString(), running.id],

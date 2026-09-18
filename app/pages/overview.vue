@@ -38,8 +38,12 @@ const filterItems = computed(() => [
 const now = useNow();
 
 const weekHours = computed(() => {
-  const start = startOfWeek(now.value, { weekStartsOn: settings.value.weekStartsOn });
-  const end = endOfWeek(now.value, { weekStartsOn: settings.value.weekStartsOn });
+  const start = startOfWeek(now.value, {
+    weekStartsOn: settings.value.weekStartsOn,
+  });
+  const end = endOfWeek(now.value, {
+    weekStartsOn: settings.value.weekStartsOn,
+  });
   return totalHours(
     entriesInRange(entries.value, start, end, filterClientId.value),
   );
@@ -86,8 +90,12 @@ function applyPreset(p: Preset) {
   preset.value = p;
   const n = new Date();
   if (p === "this-week") {
-    billingStart.value = toDateInput(startOfWeek(n, { weekStartsOn: settings.value.weekStartsOn }));
-    billingEnd.value = toDateInput(endOfWeek(n, { weekStartsOn: settings.value.weekStartsOn }));
+    billingStart.value = toDateInput(
+      startOfWeek(n, { weekStartsOn: settings.value.weekStartsOn }),
+    );
+    billingEnd.value = toDateInput(
+      endOfWeek(n, { weekStartsOn: settings.value.weekStartsOn }),
+    );
   } else if (p === "this-month") {
     billingStart.value = toDateInput(startOfMonth(n));
     billingEnd.value = toDateInput(endOfMonth(n));
@@ -175,8 +183,8 @@ function formatBillingDate(date: Date): string {
               {{ formatCurrency(forecast.forecast, settings.currency) }}
             </p>
             <p class="text-xs text-neutral-600 dark:text-neutral-400 mt-1">
-              {{ formatCurrency(forecast.revenueSoFar, settings.currency) }} so far ·
-              {{ forecast.elapsedWorkdays }}/{{ forecast.totalWorkdays }}
+              {{ formatCurrency(forecast.revenueSoFar, settings.currency) }} so
+              far · {{ forecast.elapsedWorkdays }}/{{ forecast.totalWorkdays }}
               workdays elapsed
             </p>
           </UCard>
@@ -242,21 +250,21 @@ function formatBillingDate(date: Date): string {
                 <div class="flex gap-1 ml-auto">
                   <UButton
                     label="This week"
-                    size="xs"
+                    size="sm"
                     :color="preset === 'this-week' ? 'primary' : 'neutral'"
                     :variant="preset === 'this-week' ? 'solid' : 'subtle'"
                     @click="applyPreset('this-week')"
                   />
                   <UButton
                     label="This month"
-                    size="xs"
+                    size="sm"
                     :color="preset === 'this-month' ? 'primary' : 'neutral'"
                     :variant="preset === 'this-month' ? 'solid' : 'subtle'"
                     @click="applyPreset('this-month')"
                   />
                   <UButton
                     label="Last month"
-                    size="xs"
+                    size="sm"
                     :color="preset === 'last-month' ? 'primary' : 'neutral'"
                     :variant="preset === 'last-month' ? 'solid' : 'subtle'"
                     @click="applyPreset('last-month')"
@@ -268,14 +276,13 @@ function formatBillingDate(date: Date): string {
                 v-if="settings.billingRoundingStep > 0"
                 class="text-xs text-muted"
               >
-                Daily hours are rounded up to {{ settings.billingRoundingStep * 60 }}-minute
-                steps —
+                Daily hours are rounded up to
+                {{ settings.billingRoundingStep * 60 }}-minute steps —
                 <NuxtLink
                   to="/settings"
                   class="underline"
                 >
-                  change in Settings
-                </NuxtLink>.
+                  change in Settings </NuxtLink>.
               </p>
 
               <div
@@ -356,7 +363,12 @@ function formatBillingDate(date: Date): string {
                       {{ formatHours(displayedBilling.totalHours) }}
                     </td>
                     <td class="py-2 text-right tabular-nums">
-                      {{ formatCurrency(displayedBilling.totalAmount, settings.currency) }}
+                      {{
+                        formatCurrency(
+                          displayedBilling.totalAmount,
+                          settings.currency,
+                        )
+                      }}
                     </td>
                   </tr>
                 </tfoot>

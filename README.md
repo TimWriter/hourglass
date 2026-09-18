@@ -68,9 +68,9 @@ Because the data lives in one ordinary file, you can back it up, sync it with yo
 ## Features
 
 - **Clients** — name, hourly rate, color, archive instead of delete once a client has time entries.
-- **Track** — a Toggl-style timer bar (title, client, start/stop) plus a weekly calendar. Entries can be created by clicking and dragging on empty time, moved by dragging, resized from either edge (snapping granularity is configurable in Settings), and edited or deleted via a click. A timer left running for 24 hours is automatically stopped and flagged for review.
+- **Track** — a Toggl-style timer bar (title, client, start/stop) plus a weekly calendar. Entries can be created by clicking and dragging on empty time, moved by dragging, resized from either edge (snapping granularity is configurable in Settings), and edited or deleted via a click. A timer left running is automatically stopped and flagged for review after a configurable number of hours (default 24, can be turned off).
 - **Overview** — hours this week/month (optionally filtered by client), a linear revenue forecast for the current month based on elapsed vs. total Mon–Fri workdays, and a billing calculator that computes hours/revenue per day for a chosen client and date range (This week / This month / Last month presets, or a custom range). Billing is calculated live from time entries; nothing is marked as "invoiced" or persisted separately.
-- **Settings** — time format (12/24h), first day of the week, currency, date format, calendar snapping granularity, default page on launch, and the billing table's daily rounding step. All of it is stored as JSON in the same SQLite file's `meta` table, so it travels with the database rather than living in browser storage.
+- **Settings** — time format (12/24h), first day of the week, currency, date format, calendar snapping granularity, default page on launch, auto-stop threshold, the billing table's daily rounding step, and switching to a different (or a brand-new) database file without leaving the app. All of it is stored as JSON in the same SQLite file's `meta` table, so it travels with the database rather than living in browser storage — switching files means the new file's own settings apply, not the ones you just set.
 
 ## Project structure
 

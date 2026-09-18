@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import type { DefaultPage, TimeFormat, WeekStartsOn } from "~/types";
 
 const { settings, update } = useSettings();
+const { fileName, status, createNew, openExisting, flushNow } = useDatabase();
 
 const CURRENCIES: { code: string; name: string }[] = [
   { code: "EUR", name: "Euro" },
@@ -19,7 +20,10 @@ const CURRENCIES: { code: string; name: string }[] = [
   { code: "CZK", name: "Czech Koruna" },
 ];
 const currencyItems = computed(() =>
-  CURRENCIES.map((c) => ({ label: `${c.name} (${currencySymbol(c.code)})`, value: c.code })),
+  CURRENCIES.map((c) => ({
+    label: `${c.name} (${currencySymbol(c.code)})`,
+    value: c.code,
+  })),
 );
 
 const DATE_FORMATS = ["dd.MM.yyyy", "MM/dd/yyyy", "yyyy-MM-dd", "d MMM yyyy"];
@@ -44,6 +48,15 @@ const DEFAULT_PAGE_OPTIONS: { label: string; value: DefaultPage }[] = [
   { label: "Track", value: "track" },
   { label: "Clients", value: "clients" },
   { label: "Overview", value: "overview" },
+];
+
+const AUTO_STOP_OPTIONS = [
+  { label: "Never", value: 0 },
+  { label: "4 hours", value: 4 },
+  { label: "8 hours", value: 8 },
+  { label: "12 hours", value: 12 },
+  { label: "24 hours", value: 24 },
+  { label: "48 hours", value: 48 },
 ];
 
 function setTimeFormat(value: TimeFormat) {
@@ -73,14 +86,34 @@ const defaultPage = computed({
   get: () => settings.value.defaultPage,
   set: (value: DefaultPage) => update({ defaultPage: value }),
 });
+const autoStopHours = computed({
+  get: () => settings.value.autoStopHours,
+  set: (value: number) => update({ autoStopHours: value }),
+});
 
-const clockPreview = computed(() => formatClock(new Date(), settings.value.timeFormat));
+const clockPreview = computed(() =>
+  formatClock(new Date(), settings.value.timeFormat),
+);
+
+// Flush any pending debounced write against the CURRENT file before
+// swapping db.value/fileHandle.value out from under it — otherwise a
+// change made in the last ~400ms could be lost instead of saved.
+async function switchToNewFile() {
+  flushNow();
+  await createNew();
+}
+async function switchToExistingFile() {
+  flushNow();
+  await openExisting();
+}
 </script>
 
 <template>
   <UDashboardPanel>
     <template #body>
-      <div class="flex flex-col rounded-xl flex-1 p-6 gap-6 bg-white/95 dark:bg-black/50 backdrop-blur-lg">
+      <div
+        class="flex flex-col rounded-xl flex-1 p-6 gap-6 bg-white/95 dark:bg-black/50 backdrop-blur-lg"
+      >
         <div>
           <h1 class="text-2xl font-semibold">
             Settings
@@ -195,6 +228,61 @@ const clockPreview = computed(() => formatClock(new Date(), settings.value.timeF
                 class="w-48"
               />
             </UFormField>
+
+            <UFormField
+              label="Auto-stop running timers after"
+              description="A timer left running this long is stopped automatically and flagged for review."
+            >
+              <USelectMenu
+                v-model="autoStopHours"
+                :items="AUTO_STOP_OPTIONS"
+                value-key="value"
+                label-key="label"
+                class="w-48"
+              />
+            </UFormField>
+          </div>
+        </UCard>
+
+        <UCard>
+          <template #header>
+            <h2 class="font-semibold">
+              Database file
+            </h2>
+          </template>
+
+          <div class="flex flex-col gap-4">
+            <UFormField
+              label="Current file"
+              :description="status === 'connected' ? undefined : 'Not connected.'"
+            >
+              <p class="text-sm font-medium text-highlighted">
+                {{ fileName || "—" }}
+              </p>
+            </UFormField>
+
+            <div class="flex flex-wrap gap-2">
+              <UButton
+                label="Switch to a different file"
+                icon="i-lucide-folder-open"
+                color="neutral"
+                variant="subtle"
+                @click="switchToExistingFile"
+              />
+              <UButton
+                label="Create a new file"
+                icon="i-lucide-file-plus"
+                color="neutral"
+                variant="subtle"
+                @click="switchToNewFile"
+              />
+            </div>
+            <p class="text-xs text-muted">
+              Switching writes any unsaved changes to the current file first,
+              then connects the one you pick — your settings live in the
+              database file itself, so they won't carry over to a different
+              file.
+            </p>
           </div>
         </UCard>
 
