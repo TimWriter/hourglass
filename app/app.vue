@@ -1,13 +1,7 @@
 <script setup lang="ts">
-// Bound (not a static attribute) so Vue's SFC compiler doesn't wrap it in
-// Nuxt's publicAssetsURL()/baseURL-joining helper — scripts/pack-offline.mjs
-// substitutes this constant for a data: URI, and that wrapper would corrupt
-// the result into "/data:image/png;base64,..." at runtime.
-const logoSrc = "/logo.png";
-
 useHead({
   meta: [{ name: "viewport", content: "width=device-width, initial-scale=1" }],
-  link: [{ rel: "icon", href: logoSrc }],
+  link: [{ rel: "icon", href: "/logo.png" }],
   htmlAttrs: {
     lang: "en",
   },
@@ -76,7 +70,7 @@ const route = useRoute();
               <span class="flex items-center justify-center size-8">
                 <img
                   class="size-5"
-                  :src="logoSrc"
+                  src="/logo.png"
                   alt="Hourglass logo"
                 >
               </span>

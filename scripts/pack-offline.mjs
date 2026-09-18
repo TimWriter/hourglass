@@ -35,9 +35,17 @@ css = css.replace(/url\((\/[^)]+?\.(woff2?|ttf|otf))\)/g, (_match, url, ext) => 
 });
 
 // Inline the logo (favicon + sidebar <img>) as a data: URI so nothing
-// references an absolute "/logo.png" path at runtime.
+// references an absolute "/logo.png" path at runtime. The sidebar <img>'s
+// "/logo.png" is a static template attribute, so Vue's SFC compiler wraps
+// it in Nuxt's publicAssetsURL()/baseURL-joining helper (needed so it also
+// resolves correctly when hosted under a sub-path, e.g. GitHub Pages) —
+// that wrapper call has to be stripped entirely, not just its string
+// argument, or it re-prepends baseURL in front of our data: URI at runtime.
 const logoDataUri = `data:image/png;base64,${readAsset("/logo.png").toString("base64")}`;
-js = js.replaceAll("`/logo.png`", () => `\`${logoDataUri}\``).replaceAll("\"/logo.png\"", () => `"${logoDataUri}"`);
+js = js
+  .replace(/[a-zA-Z_$][\w$]*\(`\/logo\.png`\)/g, () => `\`${logoDataUri}\``)
+  .replaceAll("`/logo.png`", () => `\`${logoDataUri}\``)
+  .replaceAll("\"/logo.png\"", () => `"${logoDataUri}"`);
 html = html.replace("href=\"/logo.png\"", () => `href="${logoDataUri}"`);
 
 if (!js.includes("data:application/wasm")) {

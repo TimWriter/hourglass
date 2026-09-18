@@ -2,6 +2,14 @@
 
 A local, single-user time tracker for freelancers — a Toggl Track replacement that runs entirely in the browser. There is no backend, no login, and no cloud database: every client, project entry, and timer lives in a single SQLite file on your own computer.
 
+![Hourglass — a weekly calendar of time entries color-coded by client, next to a dark sidebar with Track, Clients, and Overview navigation](docs/screenshot.jpg)
+
+## Quick start — just try it
+
+**[Open the live demo](https://timwriter.github.io/hourglass/)** — runs entirely in your browser, nothing to install. Click "Create new database file" and pick anywhere on disk to try it with real data (or throw the file away afterwards).
+
+Prefer not to use a hosted page at all? **[Download hourglass.html](https://github.com/TimWriter/hourglass/releases/latest/download/hourglass.html)** and open it directly — no server, no Node, no install. It's a single file, rebuilt automatically from `main` on every push (see [Offline, no-server build](#offline-no-server-build) below for how that works).
+
 Built with [Nuxt](https://nuxt.com), [Nuxt UI v4](https://ui.nuxt.com), [sql.js](https://sql.js.org) (SQLite compiled to WebAssembly) and the browser's [File System Access API](https://developer.mozilla.org/en-US/docs/Web/API/File_System_API).
 
 The visual style (Outfit font, purple accent, dark floating nav bar, pastel calendar entries, generous rounded corners) is modeled after the moodboard in `reference/`. The whole radius scale is driven by the single `--ui-radius` token in `app/assets/css/main.css`, and the primary color is a custom purple scale defined there too.
