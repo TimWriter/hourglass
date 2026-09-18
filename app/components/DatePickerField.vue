@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { CalendarDate, type DateValue } from "@internationalized/date";
+import type { DateValue } from "@internationalized/date";
 import { format } from "date-fns";
+import { toCalendarDate, calendarDateToInput, fromDateInput } from "~/utils/date";
 
 const { settings } = useSettings();
 
@@ -8,23 +9,17 @@ const { settings } = useSettings();
 // date handling), converted to/from a CalendarDate for UCalendar.
 const modelValue = defineModel<string>({ required: true });
 
-function toCalendarDate(value: string): CalendarDate {
-  const [y, m, d] = value.split("-").map(Number);
-  return new CalendarDate(y ?? new Date().getFullYear(), m ?? 1, d ?? 1);
-}
-
-function toDateString(value: DateValue): string {
-  return `${value.year.toString().padStart(4, "0")}-${value.month.toString().padStart(2, "0")}-${value.day.toString().padStart(2, "0")}`;
-}
-
 const calendarValue = computed<DateValue>({
   get: () => toCalendarDate(modelValue.value),
   set: (value) => {
-    if (value) modelValue.value = toDateString(value);
+    if (value) modelValue.value = calendarDateToInput(value);
   },
 });
 
-const displayLabel = computed(() => format(toCalendarDate(modelValue.value).toDate("UTC"), settings.value.dateFormat));
+// fromDateInput (not calendarValue.toDate(), which interprets the calendar
+// day in a fixed zone and can shift a day under date-fns' local getters)
+// keeps this consistent with the rest of the app's local-time convention.
+const displayLabel = computed(() => format(fromDateInput(modelValue.value), settings.value.dateFormat));
 
 const open = ref(false);
 </script>

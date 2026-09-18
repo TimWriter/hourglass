@@ -12,7 +12,7 @@ Prefer not to use a hosted page at all? **[Download hourglass.html](https://gith
 
 Built with [Nuxt](https://nuxt.com), [Nuxt UI v4](https://ui.nuxt.com), [sql.js](https://sql.js.org) (SQLite compiled to WebAssembly) and the browser's [File System Access API](https://developer.mozilla.org/en-US/docs/Web/API/File_System_API).
 
-The visual style (Outfit font, purple accent, dark floating nav bar, pastel calendar entries, generous rounded corners) is modeled after the moodboard in `reference/`. The whole radius scale is driven by the single `--ui-radius` token in `app/assets/css/main.css`, and the primary color is a custom purple scale defined there too.
+The visual style (Outfit font, purple accent, dark floating nav bar, pastel calendar entries, generous rounded corners) is modeled after the moodboard in `reference/`. The whole radius scale is driven by the single `--ui-radius` token in `app/assets/css/main.css`, and the primary color is a custom purple scale defined there too. Component-level style tweaks (e.g. neutral `subtle`-variant buttons/badges rendering as flat zinc-100/800 instead of Nuxt UI's default `bg-elevated`) live in `app/app.config.ts`'s `ui` overrides, not scattered `class` props on individual components.
 
 ## Requirements
 
@@ -68,8 +68,8 @@ Because the data lives in one ordinary file, you can back it up, sync it with yo
 ## Features
 
 - **Clients** — name, hourly rate, color, archive instead of delete once a client has time entries.
-- **Track** — a Toggl-style timer bar (title, client, start/stop) plus a weekly calendar. Entries can be created by clicking and dragging on empty time, moved by dragging, resized from either edge (snapping granularity is configurable in Settings), and edited or deleted via a click — the edit modal's time fields are precise to the second. A timer left running is automatically stopped and flagged for review after a configurable number of hours (default 24, can be turned off). If the tab is backgrounded (or the computer sleeps) for longer than a configurable idle threshold (default 10 minutes) while a timer is running, coming back prompts you to keep the gap as billable time or discard it and continue tracking from now.
-- **Overview** — hours this week/month (optionally filtered by client), a linear revenue forecast for the current month based on elapsed vs. total Mon–Fri workdays, and a billing calculator that computes hours/revenue per day for a chosen client and date range (This week / This month / Last month presets, or a custom range). Billing is calculated live from time entries; nothing is marked as "invoiced" or persisted separately.
+- **Track** — a Toggl-style timer bar (title, client, start/stop) plus a weekly calendar. The week is picked via one button (`DateRangeButton`, shared with Overview) that opens a Nuxt UI calendar plus a "This week" shortcut; picking any day jumps to the week containing it, and the button's label reflects whichever week is showing. Entries can be created by clicking and dragging on empty time, moved by dragging, resized from either edge (snapping granularity is configurable in Settings), and edited or deleted via a click — the edit modal's time fields are precise to the second. A timer left running is automatically stopped and flagged for review after a configurable number of hours (default 24, can be turned off). If the tab is backgrounded (or the computer sleeps) for longer than a configurable idle threshold (default 10 minutes) while a timer is running, coming back prompts you to keep the gap as billable time or discard it and continue tracking from now.
+- **Overview** — hours this week/month (optionally filtered by client), a linear revenue forecast for the current month based on elapsed vs. total Mon–Fri workdays, and a billing calculator that computes hours/revenue per day for a chosen client and date range. The same `DateRangeButton` component is used here in true range mode: This week / This month / Last month presets, or an arbitrary two-click custom range from the calendar — picking a preset (or a custom range that happens to match one) replaces whatever was showing, and the button's label switches between the preset name and the formatted date range accordingly. Billing is calculated live from time entries; nothing is marked as "invoiced" or persisted separately.
 - **Settings** — time format (12/24h), first day of the week, currency, date format, calendar snapping granularity, default page on launch, auto-stop threshold, idle-detection threshold, the billing table's daily rounding step, and switching to a different (or a brand-new) database file without leaving the app. All of it is stored as JSON in the same SQLite file's `meta` table, so it travels with the database rather than living in browser storage — switching files means the new file's own settings apply, not the ones you just set.
 
 ## Project structure
@@ -79,9 +79,9 @@ app/
   composables/   useDatabase (sql.js + file persistence), useClients, useTimeEntries,
                  useSettings, useIdleDetection, useNow
   components/    SetupScreen, WeekCalendar, TimerBar, ClientFormModal, EntryEditModal,
-                 IdleDetectionModal, ...
+                 IdleDetectionModal, DateRangeButton, ...
   pages/         track.vue, clients.vue, overview.vue, settings.vue
-  utils/         format.ts, week.ts, stats.ts
+  utils/         format.ts, week.ts, stats.ts, date.ts
 scripts/
   pack-offline.mjs   packs `nuxt generate`'s output into the single-file offline build
 ```

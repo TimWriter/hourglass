@@ -112,3 +112,13 @@ export type ConnectionStatus
     | "error";
 
 export type SaveState = "idle" | "saving" | "saved" | "error";
+
+export interface DateRange {
+  start: string;
+  end: string;
+}
+
+export interface DateRangePreset {
+  label: string;
+  range: () => DateRange;
+}

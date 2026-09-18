@@ -14,6 +14,8 @@ import {
   billingRows,
   applyDailyRoundUp,
 } from "~/utils/stats";
+import { toDateInput, fromDateInput } from "~/utils/date";
+import type { DateRange, DateRangePreset } from "~/types";
 
 const { activeClients, archivedClients, getById } = useClients();
 const { entries, refresh } = useTimeEntries();
@@ -72,52 +74,42 @@ const billingClientItems = computed(() =>
   allClients.value.map((c) => ({ label: c.name, value: c.id, color: c.color })),
 );
 
-type Preset = "this-week" | "this-month" | "last-month" | "custom";
-const preset = ref<Preset>("this-month");
+const billingPresets: DateRangePreset[] = [
+  {
+    label: "This week",
+    range: () => {
+      const n = new Date();
+      return {
+        start: toDateInput(startOfWeek(n, { weekStartsOn: settings.value.weekStartsOn })),
+        end: toDateInput(endOfWeek(n, { weekStartsOn: settings.value.weekStartsOn })),
+      };
+    },
+  },
+  {
+    label: "This month",
+    range: () => {
+      const n = new Date();
+      return { start: toDateInput(startOfMonth(n)), end: toDateInput(endOfMonth(n)) };
+    },
+  },
+  {
+    label: "Last month",
+    range: () => {
+      const lastMonth = subMonths(new Date(), 1);
+      return { start: toDateInput(startOfMonth(lastMonth)), end: toDateInput(endOfMonth(lastMonth)) };
+    },
+  },
+];
 
-function toDateInput(d: Date) {
-  return formatDate(d, "yyyy-MM-dd");
-}
-function fromDateInput(s: string) {
-  const [y, m, d] = s.split("-").map(Number);
-  return new Date(y!, (m ?? 1) - 1, d ?? 1);
-}
-
-const billingStart = ref(toDateInput(startOfMonth(new Date())));
-const billingEnd = ref(toDateInput(endOfMonth(new Date())));
-
-function applyPreset(p: Preset) {
-  preset.value = p;
-  const n = new Date();
-  if (p === "this-week") {
-    billingStart.value = toDateInput(
-      startOfWeek(n, { weekStartsOn: settings.value.weekStartsOn }),
-    );
-    billingEnd.value = toDateInput(
-      endOfWeek(n, { weekStartsOn: settings.value.weekStartsOn }),
-    );
-  } else if (p === "this-month") {
-    billingStart.value = toDateInput(startOfMonth(n));
-    billingEnd.value = toDateInput(endOfMonth(n));
-  } else if (p === "last-month") {
-    const lastMonth = subMonths(n, 1);
-    billingStart.value = toDateInput(startOfMonth(lastMonth));
-    billingEnd.value = toDateInput(endOfMonth(lastMonth));
-  }
-}
-applyPreset("this-month");
-
-function onManualDateChange() {
-  preset.value = "custom";
-}
+const billingRange = ref<DateRange>(billingPresets[1]!.range());
 
 const billing = computed(() => {
   if (!billingClientId.value) return null;
   return billingRows(
     entries.value,
     billingClientId.value,
-    fromDateInput(billingStart.value),
-    fromDateInput(billingEnd.value),
+    fromDateInput(billingRange.value.start),
+    fromDateInput(billingRange.value.end),
   );
 });
 
@@ -130,6 +122,9 @@ const displayedBilling = computed(() => {
 const weekdayFormatter = new Intl.DateTimeFormat("en-US", { weekday: "short" });
 function formatBillingDate(date: Date): string {
   return formatDate(date, settings.value.dateFormat);
+}
+function formatBillingRange(start: Date, end: Date): string {
+  return `${formatBillingDate(start)} – ${formatBillingDate(end)}`;
 }
 </script>
 
@@ -232,44 +227,16 @@ function formatBillingDate(date: Date): string {
                   </USelectMenu>
                 </UFormField>
 
-                <UFormField label="From">
-                  <UInput
-                    v-model="billingStart"
-                    type="date"
-                    @change="onManualDateChange"
+                <UFormField
+                  label="Date range"
+                  class="ml-auto"
+                >
+                  <DateRangeButton
+                    v-model="billingRange"
+                    :presets="billingPresets"
+                    :format-range="formatBillingRange"
                   />
                 </UFormField>
-                <UFormField label="To">
-                  <UInput
-                    v-model="billingEnd"
-                    type="date"
-                    @change="onManualDateChange"
-                  />
-                </UFormField>
-
-                <div class="flex gap-1 ml-auto">
-                  <UButton
-                    label="This week"
-                    size="sm"
-                    :color="preset === 'this-week' ? 'primary' : 'neutral'"
-                    :variant="preset === 'this-week' ? 'solid' : 'subtle'"
-                    @click="applyPreset('this-week')"
-                  />
-                  <UButton
-                    label="This month"
-                    size="sm"
-                    :color="preset === 'this-month' ? 'primary' : 'neutral'"
-                    :variant="preset === 'this-month' ? 'solid' : 'subtle'"
-                    @click="applyPreset('this-month')"
-                  />
-                  <UButton
-                    label="Last month"
-                    size="sm"
-                    :color="preset === 'last-month' ? 'primary' : 'neutral'"
-                    :variant="preset === 'last-month' ? 'solid' : 'subtle'"
-                    @click="applyPreset('last-month')"
-                  />
-                </div>
               </div>
 
               <p

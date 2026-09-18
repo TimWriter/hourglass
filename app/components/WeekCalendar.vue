@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import { addDays, startOfDay } from "date-fns";
-import type { TimeEntry } from "~/types";
+import type { TimeEntry, DateRangePreset } from "~/types";
 import {
   weekStart as toWeekStart,
+  weekEnd as toWeekEnd,
   weekDays,
   nextWeek,
   previousWeek,
-  isCurrentWeek,
   formatWeekRange,
   formatDayHeader,
   isSameDay,
 } from "~/utils/week";
+import { toDateInput, fromDateInput } from "~/utils/date";
 
 const ROW_HEIGHT = 48; // px per hour
 
@@ -38,9 +39,25 @@ function goPrev() {
 function goNext() {
   anchor.value = nextWeek(anchor.value);
 }
-function goToday() {
-  anchor.value = toWeekStart(new Date(), settings.value.weekStartsOn);
+const weekRange = computed(() => ({
+  start: toDateInput(anchor.value),
+  end: toDateInput(addDays(anchor.value, 6)),
+}));
+function onWeekRangeChange(range: { start: string; end: string }) {
+  anchor.value = fromDateInput(range.start);
 }
+const weekPresets: DateRangePreset[] = [
+  {
+    label: "This week",
+    range: () => {
+      const today = new Date();
+      return {
+        start: toDateInput(toWeekStart(today, settings.value.weekStartsOn)),
+        end: toDateInput(toWeekEnd(today, settings.value.weekStartsOn)),
+      };
+    },
+  },
+];
 
 function hourLabel(hour: number): string {
   if (settings.value.timeFormat === "12h") {
@@ -451,18 +468,14 @@ onMounted(() => {
             aria-label="Next week"
             @click="goNext"
           />
-          <UButton
-            label="This week"
-            color="neutral"
-            variant="subtle"
-            size="sm"
-            :disabled="isCurrentWeek(anchor, settings.weekStartsOn)"
-            @click="goToday"
-          />
         </div>
-        <p class="text-sm font-medium text-highlighted">
-          {{ formatWeekRange(anchor) }}
-        </p>
+        <DateRangeButton
+          :model-value="weekRange"
+          :presets="weekPresets"
+          week-mode
+          :format-range="(start) => formatWeekRange(start)"
+          @update:model-value="onWeekRangeChange"
+        />
       </div>
 
       <div
