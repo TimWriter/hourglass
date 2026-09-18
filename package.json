@@ -1,0 +1,39 @@
+{
+  "name": "tracker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "build:offline": "nuxt generate && node scripts/pack-offline.mjs",
+    "dev": "nuxt dev",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "lint": "eslint .",
+    "typecheck": "nuxt typecheck"
+  },
+  "dependencies": {
+    "@iconify-json/lucide": "^1.2.131",
+    "@iconify-json/simple-icons": "^1.2.95",
+    "@internationalized/date": "^3.12.4",
+    "@nuxt/image": "2.1.0",
+    "@nuxt/ui": "^4.11.1",
+    "@vueuse/core": "^15.0.0",
+    "date-fns": "^4.4.0",
+    "idb-keyval": "^6.3.0",
+    "nuxt": "^4.5.2",
+    "sql.js": "^1.14.2",
+    "tailwindcss": "^4.3.3",
+    "three": "^0.186.0"
+  },
+  "devDependencies": {
+    "@nuxt/eslint": "^1.17.0",
+    "@types/sql.js": "^1.4.11",
+    "@types/three": "^0.186.0",
+    "@types/wicg-file-system-access": "^2023.10.7",
+    "eslint": "^10.10.0",
+    "eslint-plugin-better-tailwindcss": "^4.7.0",
+    "typescript": "^6.0.3",
+    "vue-tsc": "^3.3.11"
+  },
+  "packageManager": "pnpm@12.4.1"
+}

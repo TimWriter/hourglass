@@ -1,0 +1,35 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+@theme static {
+  --font-sans: 'Outfit', sans-serif;
+
+  --color-purple-50: #F5F1FE;
+  --color-purple-100: #EBE2FD;
+  --color-purple-200: #D7C5FA;
+  --color-purple-300: #C3A9F5;
+  --color-purple-400: #B591EF;
+  --color-purple-500: #9B72E0;
+  --color-purple-600: #7F56C9;
+  --color-purple-700: #6642A6;
+  --color-purple-800: #4F3485;
+  --color-purple-900: #3B2872;
+  --color-purple-950: #2D1E69;
+}
+
+:root {
+  --ui-radius: 0.5rem;
+}
+
+/* Tailwind v4 dropped the v3 default of `cursor: pointer` on buttons.
+   Nuxt UI's own theme doesn't set it either, so restore it globally
+   (disabled buttons keep their own `cursor-not-allowed` override, which
+   wins because Tailwind's utilities layer loads after this base layer). */
+@layer base {
+  button:not(:disabled),
+  [type='button']:not(:disabled),
+  [type='submit']:not(:disabled),
+  [type='reset']:not(:disabled) {
+    cursor: pointer;
+  }
+}
