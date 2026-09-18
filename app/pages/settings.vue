@@ -59,6 +59,15 @@ const AUTO_STOP_OPTIONS = [
   { label: "48 hours", value: 48 },
 ];
 
+const IDLE_THRESHOLD_OPTIONS = [
+  { label: "Never", value: 0 },
+  { label: "5 minutes", value: 5 },
+  { label: "10 minutes", value: 10 },
+  { label: "15 minutes", value: 15 },
+  { label: "30 minutes", value: 30 },
+  { label: "60 minutes", value: 60 },
+];
+
 function setTimeFormat(value: TimeFormat) {
   update({ timeFormat: value });
 }
@@ -89,6 +98,10 @@ const defaultPage = computed({
 const autoStopHours = computed({
   get: () => settings.value.autoStopHours,
   set: (value: number) => update({ autoStopHours: value }),
+});
+const idleThresholdMinutes = computed({
+  get: () => settings.value.idleThresholdMinutes,
+  set: (value: number) => update({ idleThresholdMinutes: value }),
 });
 
 const clockPreview = computed(() =>
@@ -236,6 +249,19 @@ async function switchToExistingFile() {
               <USelectMenu
                 v-model="autoStopHours"
                 :items="AUTO_STOP_OPTIONS"
+                value-key="value"
+                label-key="label"
+                class="w-48"
+              />
+            </UFormField>
+
+            <UFormField
+              label="Idle detection"
+              description="If this tab is backgrounded (or the computer sleeps) this long while a timer runs, you'll be asked to keep or discard the gap when you come back."
+            >
+              <USelectMenu
+                v-model="idleThresholdMinutes"
+                :items="IDLE_THRESHOLD_OPTIONS"
                 value-key="value"
                 label-key="label"
                 class="w-48"

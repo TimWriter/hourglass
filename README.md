@@ -68,16 +68,18 @@ Because the data lives in one ordinary file, you can back it up, sync it with yo
 ## Features
 
 - **Clients** — name, hourly rate, color, archive instead of delete once a client has time entries.
-- **Track** — a Toggl-style timer bar (title, client, start/stop) plus a weekly calendar. Entries can be created by clicking and dragging on empty time, moved by dragging, resized from either edge (snapping granularity is configurable in Settings), and edited or deleted via a click. A timer left running is automatically stopped and flagged for review after a configurable number of hours (default 24, can be turned off).
+- **Track** — a Toggl-style timer bar (title, client, start/stop) plus a weekly calendar. Entries can be created by clicking and dragging on empty time, moved by dragging, resized from either edge (snapping granularity is configurable in Settings), and edited or deleted via a click — the edit modal's time fields are precise to the second. A timer left running is automatically stopped and flagged for review after a configurable number of hours (default 24, can be turned off). If the tab is backgrounded (or the computer sleeps) for longer than a configurable idle threshold (default 10 minutes) while a timer is running, coming back prompts you to keep the gap as billable time or discard it and continue tracking from now.
 - **Overview** — hours this week/month (optionally filtered by client), a linear revenue forecast for the current month based on elapsed vs. total Mon–Fri workdays, and a billing calculator that computes hours/revenue per day for a chosen client and date range (This week / This month / Last month presets, or a custom range). Billing is calculated live from time entries; nothing is marked as "invoiced" or persisted separately.
-- **Settings** — time format (12/24h), first day of the week, currency, date format, calendar snapping granularity, default page on launch, auto-stop threshold, the billing table's daily rounding step, and switching to a different (or a brand-new) database file without leaving the app. All of it is stored as JSON in the same SQLite file's `meta` table, so it travels with the database rather than living in browser storage — switching files means the new file's own settings apply, not the ones you just set.
+- **Settings** — time format (12/24h), first day of the week, currency, date format, calendar snapping granularity, default page on launch, auto-stop threshold, idle-detection threshold, the billing table's daily rounding step, and switching to a different (or a brand-new) database file without leaving the app. All of it is stored as JSON in the same SQLite file's `meta` table, so it travels with the database rather than living in browser storage — switching files means the new file's own settings apply, not the ones you just set.
 
 ## Project structure
 
 ```
 app/
-  composables/   useDatabase (sql.js + file persistence), useClients, useTimeEntries, useSettings, useNow
-  components/    SetupScreen, WeekCalendar, TimerBar, ClientFormModal, EntryEditModal, ...
+  composables/   useDatabase (sql.js + file persistence), useClients, useTimeEntries,
+                 useSettings, useIdleDetection, useNow
+  components/    SetupScreen, WeekCalendar, TimerBar, ClientFormModal, EntryEditModal,
+                 IdleDetectionModal, ...
   pages/         track.vue, clients.vue, overview.vue, settings.vue
   utils/         format.ts, week.ts, stats.ts
 scripts/
@@ -94,4 +96,5 @@ scripts/
 - **The overview's client filter also scopes the revenue forecast**, not just the two hour tiles, since it lives in the same "Stats" area.
 - **Remembering the file handle in IndexedDB is best-effort.** If that write fails (e.g. private browsing with IndexedDB disabled), the freshly opened/created database still loads and works for the current session — you'd just be asked to pick the file again next time instead of the app being blocked entirely.
 - **A running (or multi-day) calendar entry can't be dragged**, only clicked to open the edit modal — resizing/moving a still-open-ended entry isn't a meaningful operation, and the edit modal already lets you set an end time (which also stops the timer) or correct the start time.
+- **Idle detection is based on the Page Visibility API**, not real OS-level input tracking (web pages can't observe global mouse/keyboard activity). It triggers when the tab is backgrounded or the computer sleeps for longer than the configured threshold while a timer is running; it won't catch you being AFK with the tab focused and no other tabs/apps in front.
 - **Routing uses hash mode** (`app/router.options.ts`) rather than history mode, so URLs look like `/#/track` instead of `/track` even when hosted normally. This was needed to support the offline single-file build (see above), where there's no server to resolve a real `/track` sub-path, and hash mode works identically either way.

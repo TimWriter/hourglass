@@ -84,6 +84,9 @@ export interface Settings {
   defaultPage: DefaultPage;
   /** Hours a running timer is left before it's auto-stopped (0 = never). */
   autoStopHours: number;
+  /** Minutes the tab can be hidden (backgrounded, laptop asleep) before a
+   *  running timer prompts to keep or discard the gap (0 = never). */
+  idleThresholdMinutes: number;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -95,6 +98,7 @@ export const DEFAULT_SETTINGS: Settings = {
   snapMinutes: 15,
   defaultPage: "track",
   autoStopHours: 24,
+  idleThresholdMinutes: 10,
 };
 
 export type ConnectionStatus

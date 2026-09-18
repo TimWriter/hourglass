@@ -128,6 +128,8 @@ const route = useRoute();
           <NuxtPage />
         </div>
       </UDashboardGroup>
+
+      <IdleDetectionModal />
     </template>
   </UApp>
 </template>
